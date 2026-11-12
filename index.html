@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Birthday Surprise · Besty</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --pink: #ffb6c1;
+    --deep-pink: #ff7b9c;
+    --cream: #fff4e6;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    background: radial-gradient(circle at 30% 20%, #3a2244 0%, #1a1420 60%, #0d0a12 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+
+  /* ============ CONNECT CARD ============ */
+  .connect-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 2.5rem;
+    padding: 3.5rem 3rem;
+    text-align: center;
+    border: 1px solid rgba(255, 220, 200, 0.25);
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8),
+                0 0 80px -20px rgba(255, 140, 160, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    animation: cardIn 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 420px;
+    width: 100%;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .connect-card h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffe0b2, #ffb6c1, #ff9eb5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 3px;
+    margin-bottom: 0.6rem;
+  }
+  .connect-card p {
+    color: #c9b8c0;
+    font-style: italic;
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+  .connect-btn {
+    background: linear-gradient(135deg, #ffc2c2, #ff9ea8);
+    border: none;
+    padding: 1.15rem 3.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #3a1a22;
+    border-radius: 60px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    box-shadow: 0 15px 35px -10px rgba(255, 130, 150, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    transition: transform 0.2s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .connect-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s;
+  }
+  .connect-btn:hover::after { transform: translateX(120%); }
+  .connect-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 45px -10px rgba(255, 120, 140, 0.9),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  }
+  .connect-btn:active { transform: scale(0.97); }
+
+  /* ============ BIRTHDAY PAGE ============ */
+  .birthday-page {
+    display: none;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 999;
+  }
+  .birthday-page.active { display: block; }
+
+  /* background portrait */
+  .bg-portrait {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: brightness(1.05) contrast(1.05) saturate(1.1);
+    z-index: 0;
+    animation: slowZoom 25s ease-in-out infinite alternate;
+  }
+  @keyframes slowZoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.08); }
+  }
+
+  /* readable gradient overlay */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgba(10, 5, 15, 0.85) 0%, rgba(10, 5, 15, 0.25) 40%, rgba(10, 5, 15, 0.1) 100%),
+      radial-gradient(circle at 50% 40%, transparent 30%, rgba(0,0,0,0.35) 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ============ FLOATING WISHES (30) ============ */
+  .wishes-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .wish {
+    position: absolute;
+    bottom: -80px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    background: linear-gradient(145deg, #fff0f5, #ffd9e8, #ffc2d6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(255, 150, 180, 0.9)) drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+    animation: floatUp 10s linear infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(-2deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-115vh) rotate(6deg); opacity: 0; }
+  }
+
+  .wish:nth-child(1)  { left: 2%;   font-size: 2.4rem; animation-duration: 9s;   animation-delay: 0s; }
+  .wish:nth-child(2)  { left: 9%;   font-size: 1.6rem; animation-duration: 12s;  animation-delay: 1.8s; }
+  .wish:nth-child(3)  { left: 16%;  font-size: 2.1rem; animation-duration: 8.5s; animation-delay: 0.6s; }
+  .wish:nth-child(4)  { left: 23%;  font-size: 1.8rem; animation-duration: 11s;  animation-delay: 3.1s; }
+  .wish:nth-child(5)  { left: 30%;  font-size: 2.3rem; animation-duration: 9.5s; animation-delay: 0.3s; }
+  .wish:nth-child(6)  { left: 37%;  font-size: 1.5rem; animation-duration: 13s;  animation-delay: 4.2s; }
+  .wish:nth-child(7)  { left: 44%;  font-size: 2.0rem; animation-duration: 10.5s;animation-delay: 1.2s; }
+  .wish:nth-child(8)  { left: 51%;  font-size: 2.5rem; animation-duration: 9s;   animation-delay: 2.9s; }
+  .wish:nth-child(9)  { left: 58%;  font-size: 1.7rem; animation-duration: 12.5s;animation-delay: 0.9s; }
+  .wish:nth-child(10) { left: 65%;  font-size: 2.2rem; animation-duration: 8.8s; animation-delay: 3.7s; }
+  .wish:nth-child(11) { left: 72%;  font-size: 1.9rem; animation-duration: 11.5s;animation-delay: 1.5s; }
+  .wish:nth-child(12) { left: 79%;  font-size: 2.6rem; animation-duration: 9.2s; animation-delay: 4.8s; }
+  .wish:nth-child(13) { left: 86%;  font-size: 1.4rem; animation-duration: 13.5s;animation-delay: 2.2s; }
+  .wish:nth-child(14) { left: 93%;  font-size: 2.0rem; animation-duration: 10s;  animation-delay: 0.4s; }
+  .wish:nth-child(15) { left: 6%;   font-size: 2.3rem; animation-duration: 9.8s; animation-delay: 5.5s; }
+  .wish:nth-child(16) { left: 20%;  font-size: 1.5rem; animation-duration: 12.2s;animation-delay: 6.3s; }
+  .wish:nth-child(17) { left: 34%;  font-size: 2.4rem; animation-duration: 8.3s; animation-delay: 2.7s; }
+  .wish:nth-child(18) { left: 48%;  font-size: 1.8rem; animation-duration: 11.8s;animation-delay: 5.1s; }
+  .wish:nth-child(19) { left: 62%;  font-size: 2.1rem; animation-duration: 9.4s; animation-delay: 6.9s; }
+  .wish:nth-child(20) { left: 76%;  font-size: 1.6rem; animation-duration: 13.2s;animation-delay: 3.5s; }
+  .wish:nth-child(21) { left: 88%;  font-size: 2.5rem; animation-duration: 8.7s; animation-delay: 7.2s; }
+  .wish:nth-child(22) { left: 12%;  font-size: 2.0rem; animation-duration: 10.8s;animation-delay: 4.6s; }
+  .wish:nth-child(23) { left: 26%;  font-size: 1.7rem; animation-duration: 12.8s;animation-delay: 7.8s; }
+  .wish:nth-child(24) { left: 40%;  font-size: 2.2rem; animation-duration: 9.1s; animation-delay: 1.9s; }
+  .wish:nth-child(25) { left: 54%;  font-size: 1.9rem; animation-duration: 11.2s;animation-delay: 6.6s; }
+  .wish:nth-child(26) { left: 68%;  font-size: 2.3rem; animation-duration: 8.9s; animation-delay: 8.4s; }
+  .wish:nth-child(27) { left: 82%;  font-size: 1.5rem; animation-duration: 13.8s;animation-delay: 5.8s; }
+  .wish:nth-child(28) { left: 5%;   font-size: 2.1rem; animation-duration: 10.2s;animation-delay: 9.1s; }
+  .wish:nth-child(29) { left: 45%;  font-size: 2.4rem; animation-duration: 9.6s; animation-delay: 7.5s; }
+  .wish:nth-child(30) { left: 90%;  font-size: 1.8rem; animation-duration: 12.4s;animation-delay: 8.9s; }
+
+  /* ============ CONTROL PANEL ============ */
+  .control-panel {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    pointer-events: none;
+  }
+  .stop-btn {
+    background: rgba(20, 10, 20, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 200, 200, 0.7);
+    color: #fff0e7;
+    padding: 1rem 3.2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 80px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6),
+                0 0 25px -8px rgba(255, 150, 170, 0.7);
+    transition: all 0.25s;
+    pointer-events: auto;
+  }
+  .stop-btn:hover {
+    background: rgba(120, 40, 60, 0.85);
+    border-color: var(--pink);
+    transform: scale(1.04);
+    box-shadow: 0 0 40px rgba(255, 150, 170, 0.8);
+  }
+  .stop-btn:active { transform: scale(0.97); }
+
+  .love-note {
+    font-family: 'Georgia', serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 18px var(--deep-pink), 0 0 40px var(--deep-pink), 0 6px 20px black;
+    background: rgba(20, 10, 15, 0.3);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 0.5rem 2.5rem;
+    border-radius: 80px;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(255, 200, 200, 0.4);
+    animation: pulseLove 2.5s ease-in-out infinite;
+    pointer-events: auto;
+  }
+  @keyframes pulseLove {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+  }
+
+  @media (max-width: 600px) {
+    .connect-card { padding: 2.5rem 1.8rem; }
+    .connect-card h1 { font-size: 1.9rem; }
+    .connect-btn { padding: 1rem 2.5rem; font-size: 1.15rem; }
+    .love-note { font-size: 1.5rem; padding: 0.4rem 1.5rem; }
+    .stop-btn { padding: 0.85rem 2.4rem; font-size: 1.05rem; }
+    .wish { font-size: 1.3rem !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= CONNECT SCREEN ================= -->
+<div class="connect-card" id="connectCard">
+  <h1>✨ BESTY ✨</h1>
+  <p>a little surprise is waiting for you…</p>
+  <button class="connect-btn" id="connectBtn">CONNECT</button>
+</div>
+
+<!-- ================= BIRTHDAY PAGE ================= -->
+<div class="birthday-page" id="birthdayPage">
+
+  <!--
+    👇👇  CHANGE THIS LINE IF NEEDED  👇👇
+    • If your photo is named besty.jpeg in the same folder → src="besty.jpeg"
+    • Full path example (Windows) → src="file:///C:/Users/You/Pictures/besty.jpeg"
+    • Full path example (Mac)     → src="file:///Users/You/Desktop/besty.jpeg"
+  -->
+  <img
+    class="bg-portrait"
+    src="trial.jpeg"
+    alt="Beautiful besty, full body clearly visible"
+    onerror="this.style.background='linear-gradient(135deg,#3a2244,#1a1420)';this.alt='Add your besty.jpeg next to this file';"
+  />
+  <div class="overlay"></div>
+
+  <!-- ================= 30 FLOATING WISHES ================= -->
+  <div class="wishes-container">
+    <div class="wish">Happy Birthday!</div>
+    <div class="wish">🎂 Besty 🎂</div>
+    <div class="wish">💖 Love you 💖</div>
+    <div class="wish">⭐ Shine on ⭐</div>
+    <div class="wish">🎈 Forever young 🎈</div>
+    <div class="wish">🌸 Sweetest soul 🌸</div>
+    <div class="wish">✨ You're amazing ✨</div>
+    <div class="wish">🥳 Celebrate! 🥳</div>
+    <div class="wish">💐 Blossom 💐</div>
+    <div class="wish">🌟 Superstar 🌟</div>
+    <div class="wish">💝 Precious 💝</div>
+    <div class="wish">🎁 Blessed 🎁</div>
+    <div class="wish">🌹 Radiant 🌹</div>
+    <div class="wish">💫 Dream big 💫</div>
+    <div class="wish">🦋 Fly high 🦋</div>
+    <div class="wish">🌻 Sunshine 🌻</div>
+    <div class="wish">🍰 Sweet treats 🍰</div>
+    <div class="wish">💎 Sparkle 💎</div>
+    <div class="wish">🎊 Party time 🎊</div>
+    <div class="wish">🌈 Colorful soul 🌈</div>
+    <div class="wish">💕 Endless love 💕</div>
+    <div class="wish">🌷 Beautiful 🌷</div>
+    <div class="wish">🎵 Joyful 🎵</div>
+    <div class="wish">🕊️ Peaceful 🕊️</div>
+    <div class="wish">🧁 Cupcake 🧁</div>
+    <div class="wish">🌠 Wishing star 🌠</div>
+    <div class="wish">💐 Bloom 💐</div>
+    <div class="wish">👑 Queen 👑</div>
+    <div class="wish">🔥 Unstoppable 🔥</div>
+    <div class="wish">💖 Besty forever 💖</div>
+  </div>
+
+  <!-- ================= CONTROLS ================= -->
+  <div class="control-panel">
+    <button class="stop-btn" id="stopBtn">⏹ STOP</button>
+    <div class="love-note" id="loveNote">love you besty 😊😊</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const connectCard  = document.getElementById('connectCard');
+  const connectBtn   = document.getElementById('connectBtn');
+  const birthdayPage = document.getElementById('birthdayPage');
+  const stopBtn      = document.getElementById('stopBtn');
+  const loveNote     = document.getElementById('loveNote');
+
+  /* ---------- WEB AUDIO "HAPPY BIRTHDAY" SYNTH ---------- */
+  let audioCtx   = null;
+  let masterGain = null;
+  let isPlaying  = false;
+  let loopTimer  = null;
+
+  const NOTES = {
+    G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25,
+    F5: 698.46, G5: 783.99
+  };
+
+  const MELODY = [
+    [NOTES.G4, 0.75], [NOTES.G4, 0.25], [NOTES.A4, 1], [NOTES.G4, 1],
+    [NOTES.C5, 1], [NOTES.B4, 2],
+
+    [NOTES.G4, 0.75], [NOTES.G4, 0.25], [NOTES.A4, 1], [NOTES.G4, 1],
+    [NOTES.D5, 1], [NOTES.C5, 2],
+
+    [NOTES.G4, 0.75], [NOTES.G4, 0.25], [NOTES.G5, 1], [NOTES.E5, 1],
+    [NOTES.C5, 1], [NOTES.B4, 1], [NOTES.A4, 2],
+
+    [NOTES.F5, 0.75], [NOTES.F5, 0.25], [NOTES.E5, 1], [NOTES.C5, 1],
+    [NOTES.D5, 1], [NOTES.C5, 2.5]
+  ];
+
+  const TEMPO_BPM = 120;
+  const BEAT_SEC = 60 / TEMPO_BPM;
+
+  function initAudio() {
+    if (audioCtx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 3200;
+    filter.Q.value = 0.6;
+    filter.connect(masterGain);
+    masterGain.connect(audioCtx.destination);
+    masterGain._filter = filter;
+  }
+
+  function scheduleNote(freq, startTime, duration, output) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, startTime);
+    const attack  = 0.02;
+    const release = 0.15;
+    const sustain = Math.max(0.05, duration - attack - release);
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.55, startTime + attack);
+    gain.gain.setValueAtTime(0.55, startTime + attack + sustain);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(output);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  }
+
+  function playMelodyOnce(startTime) {
+    const output = masterGain._filter;
+    let t = startTime;
+    for (const [freq, beats] of MELODY) {
+      const dur = beats * BEAT_SEC;
+      scheduleNote(freq, t, dur * 0.92, output);
+      t += dur;
+    }
+    return t;
+  }
+
+  function startSong() {
+    if (isPlaying) return;
+    initAudio();
+    audioCtx.resume().then(() => {
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.9, now + 0.15);
+      let endTime = playMelodyOnce(now + 0.1);
+      const loopGap = 0.9;
+      loopTimer = setInterval(() => {
+        if (!isPlaying || !audioCtx) return;
+        const nextStart = endTime + loopGap;
+        if (nextStart - audioCtx.currentTime < 1.5) {
+          endTime = playMelodyOnce(nextStart);
+        }
+      }, 1000);
+      isPlaying = true;
+    }).catch(err => console.warn('Audio error:', err));
+  }
+
+  function stopSong() {
+    if (!audioCtx) return;
+    if (loopTimer) { clearInterval(loopTimer); loopTimer = null; }
+    if (masterGain) {
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value || 0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    }
+    isPlaying = false;
+  }
+
+  connectBtn.addEventListener('click', () => {
+    connectCard.style.display = 'none';
+    birthdayPage.classList.add('active');
+    loveNote.textContent = 'love you besty 😊😊';
+    startSong();
+  });
+
+  stopBtn.addEventListener('click', () => {
+    stopSong();
+    birthdayPage.classList.remove('active');
+    connectCard.style.display = 'block';
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!audioCtx || !isPlaying) return;
+    if (document.hidden) stopSong();
+    else if (birthdayPage.classList.contains('active')) startSong();
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (loopTimer) clearInterval(loopTimer);
+    if (audioCtx) try { audioCtx.close(); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
